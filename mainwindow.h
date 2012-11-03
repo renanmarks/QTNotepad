@@ -25,7 +25,7 @@ private slots:
     void about();
     
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
 
     void doOperationFile(QString, QIODevice::OpenModeFlag, QString, QString);
 };

@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "aboutdialog.h"
+#include "ui_aboutdialog.h"
 #include <QtGui>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -111,5 +113,8 @@ void MainWindow::quit()
 
 void MainWindow::about()
 {
-    QMessageBox::information(this, "About", "Developed by Renan");
+    AboutDialog about(this);
+
+    about.setModal(true);
+    about.exec();
 }
