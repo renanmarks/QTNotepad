@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFile>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,8 @@ private slots:
     
 private:
     Ui::MainWindow *ui;
+
+    void doOperationFile(QString, QIODevice::OpenModeFlag, QString, QString);
 };
 
 #endif // MAINWINDOW_H

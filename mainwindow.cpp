@@ -46,24 +46,40 @@ void MainWindow::newFile()
     return;
 }
 
+void MainWindow::doOperationFile(QString fileName, QIODevice::OpenModeFlag flag, QString errorTitle, QString errorMessage)
+{
+    QFile file(fileName);
+
+    if (!file.open(flag))
+    {
+        QMessageBox::critical(this, tr(errorTitle.toStdString().c_str()), tr(errorMessage.toStdString().c_str()));
+        return;
+    }
+
+    QTextStream stream(&file);
+
+    ui->plainTextEdit->document()->setModified(false);
+    ui->plainTextEdit->setDocumentTitle(fileName);
+    this->setWindowTitle("Notepad - " + ui->plainTextEdit->documentTitle());
+
+    if (flag == QIODevice::ReadOnly)
+    {
+        ui->plainTextEdit->document()->setPlainText(stream.readAll());
+        file.close();
+        return;
+    }
+
+    stream << ui->plainTextEdit->document()->toPlainText();
+    file.close();
+}
+
 void MainWindow::openFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
         tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
 
-    if (fileName != "") {
-        QFile file(fileName);
-
-        if (!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
-            return;
-        }
-        QTextStream in(&file);
-        ui->plainTextEdit->document()->setPlainText(in.readAll());
-        ui->plainTextEdit->setDocumentTitle(fileName);
-        this->setWindowTitle("Notepad - " + ui->plainTextEdit->documentTitle());
-        file.close();
-    }
+    if (fileName != "")
+        doOperationFile(fileName, QIODevice::ReadOnly, "Error", "Could not open file");
 }
 
 void MainWindow::saveFile()
@@ -76,17 +92,7 @@ void MainWindow::saveFile()
         return;
     }
 
-    QFile file(fileName);
-
-    if (!file.open(QIODevice::WriteOnly)) {
-        QMessageBox::critical(this, tr("Error"), tr("Could save file"));
-        return;
-    }
-    QTextStream out(&file);
-    out << ui->plainTextEdit->document()->toPlainText();
-    file.close();
-
-    ui->plainTextEdit->document()->setModified(false);
+    doOperationFile(fileName, QIODevice::WriteOnly, "Error", "Could not save file");
 }
 
 void MainWindow::saveFileAs()
@@ -94,21 +100,8 @@ void MainWindow::saveFileAs()
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
         tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
 
-    if (fileName != "") {
-        QFile file(fileName);
-
-        if (!file.open(QIODevice::WriteOnly)) {
-            QMessageBox::critical(this, tr("Error"), tr("Could save file"));
-            return;
-        }
-        QTextStream out(&file);
-        out << ui->plainTextEdit->document()->toPlainText();
-        file.close();
-
-        ui->plainTextEdit->document()->setModified(false);
-        ui->plainTextEdit->setDocumentTitle(fileName);
-        this->setWindowTitle("Notepad - " + ui->plainTextEdit->documentTitle());
-    }
+    if (fileName != "")
+        doOperationFile(fileName, QIODevice::WriteOnly, "Error", "Could not save file");
 }
 
 void MainWindow::quit()
@@ -118,5 +111,5 @@ void MainWindow::quit()
 
 void MainWindow::about()
 {
-    QMessageBox::information(this, "About", "Developed by Helix");
+    QMessageBox::information(this, "About", "Developed by Renan");
 }
